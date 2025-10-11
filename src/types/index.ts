@@ -19,6 +19,7 @@ export interface TopicsState {
   searchQuery: string;
   selectedTags: string[];
   sortBy: "recent" | "alphabetical" | "mostEdited";
+  customTemplates: TopicTemplate[];
 }
 
 export interface TopicsActions {
@@ -42,6 +43,27 @@ export interface TopicsActions {
   getFilteredTopics: () => Topic[];
   getAllTags: () => string[];
   getTopicById: (id: string) => Topic | undefined;
+
+  // Template operations
+  getAllTemplates: () => TopicTemplate[];
+  addTemplate: (template: TopicTemplate) => void;
+  updateTemplate: (id: string, updates: Partial<TopicTemplate>) => void;
+  deleteTemplate: (id: string) => void;
+  createTopicFromTemplate: (
+    templateId: string,
+    parentId?: string | null
+  ) => Topic | null;
+}
+
+export interface TopicTemplate {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  defaultTitle: string;
+  defaultContent: string;
+  defaultTags: string[];
+  isCustom: boolean;
 }
 
 export type TopicsStore = TopicsState & TopicsActions;

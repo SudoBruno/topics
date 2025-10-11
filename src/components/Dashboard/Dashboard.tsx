@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
 import { TopicCard } from "@/components/TopicCard/TopicCard";
+import { TemplateSelector } from "@/components/TemplateSelector/TemplateSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,7 @@ export function Dashboard() {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
 
   const filteredTopics = getFilteredTopics();
   const allTags = getAllTags();
@@ -96,7 +98,7 @@ export function Dashboard() {
   };
 
   const handleAddTopic = () => {
-    navigate("/topic/new");
+    setIsTemplateSelectorOpen(true);
   };
 
   const handleAddChildTopic = (parentId: string) => {
@@ -130,7 +132,11 @@ export function Dashboard() {
             {filteredTopics.length !== 1 ? "s" : ""}
           </motion.p>
         </motion.div>
-        <Button onClick={handleAddTopic} className="gap-2">
+        <Button
+          onClick={handleAddTopic}
+          className="gap-2"
+          title="Novo Tópico (Ctrl+N)"
+        >
           <Plus className="h-4 w-4" />
           Novo Tópico
         </Button>
@@ -245,7 +251,11 @@ export function Dashboard() {
               </>
             )}
           </div>
-          <Button onClick={handleAddTopic} className="gap-2">
+          <Button
+            onClick={handleAddTopic}
+            className="gap-2"
+            title="Novo Tópico (Ctrl+N)"
+          >
             <Plus className="h-4 w-4" />
             Criar Primeiro Tópico
           </Button>
@@ -277,6 +287,12 @@ export function Dashboard() {
           </AnimatePresence>
         </motion.div>
       )}
+
+      {/* Template Selector */}
+      <TemplateSelector
+        isOpen={isTemplateSelectorOpen}
+        onClose={() => setIsTemplateSelectorOpen(false)}
+      />
     </motion.div>
   );
 }

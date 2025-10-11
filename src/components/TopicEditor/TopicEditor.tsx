@@ -6,8 +6,9 @@ import { RichTextEditor } from "@/components/Editor/RichTextEditor";
 import { TagInput } from "@/components/TagInput/TagInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Maximize, Minimize } from "lucide-react";
 import { animations } from "@/lib/animations";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export function TopicEditor() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,7 @@ export function TopicEditor() {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   const topic = id ? getTopicById(id) : null;
   const isNewTopic = !id;
@@ -69,6 +71,19 @@ export function TopicEditor() {
 
   const availableTags = getAllTags();
 
+  // Configurar atalhos de teclado
+  useKeyboardShortcuts({
+    onSave: handleSave,
+    onFocusMode: () => setIsFocusMode(!isFocusMode),
+    onEscape: () => {
+      if (isFocusMode) {
+        setIsFocusMode(false);
+      } else {
+        navigate("/");
+      }
+    },
+  });
+
   if (!isEditing) {
     return (
       <div className="text-center py-12">
@@ -79,75 +94,121 @@ export function TopicEditor() {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto space-y-6"
+      className={`max-w-4xl mx-auto space-y-6 ${
+        isFocusMode ? "focus-mode" : ""
+      }`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={animations.smooth}
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">
-              {isNewTopic
-                ? parentId
-                  ? "Novo Subtópico"
-                  : "Novo Tópico"
-                : "Editar Tópico"}
-            </h1>
-            {parentTopic && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Subtópico de:{" "}
-                <span className="font-medium">{parentTopic.title}</span>
-              </p>
-            )}
+      {!isFocusMode && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold">
+                {isNewTopic
+                  ? parentId
+                    ? "Novo Subtópico"
+                    : "Novo Tópico"
+                  : "Editar Tópico"}
+              </h1>
+              {parentTopic && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Subtópico de:{" "}
+                  <span className="font-medium">{parentTopic.title}</span>
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setIsFocusMode(true)}
+              className="gap-2"
+              title="Modo Foco (Ctrl+Shift+F)"
+            >
+              <Maximize className="h-4 w-4" />
+              Foco
+            </Button>
+            <Button onClick={handleSave} className="gap-2">
+              <Save className="h-4 w-4" />
+              Salvar
+            </Button>
           </div>
         </div>
-        <Button onClick={handleSave} className="gap-2">
-          <Save className="h-4 w-4" />
-          Salvar
-        </Button>
-      </div>
+      )}
+
+      {/* Header do Modo Foco */}
+      {isFocusMode && (
+        <div className="flex items-center justify-between py-2 border-b border-border">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => setIsFocusMode(false)}
+              className="gap-2"
+            >
+              <Minimize className="h-4 w-4" />
+              Sair do Foco
+            </Button>
+            <h1 className="text-lg font-semibold truncate">
+              {title || "Sem título"}
+            </h1>
+          </div>
+          <Button onClick={handleSave} className="gap-2" size="sm">
+            <Save className="h-4 w-4" />
+            Salvar
+          </Button>
+        </div>
+      )}
 
       {/* Title Input */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Título</label>
-        <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Digite o título do tópico..."
-          className="text-lg"
-        />
-      </div>
+      {!isFocusMode && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Título</label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Digite o título do tópico..."
+            className="text-lg"
+          />
+        </div>
+      )}
 
       {/* Tags */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Tags</label>
-        <TagInput
-          tags={tags}
-          onTagsChange={setTags}
-          availableTags={availableTags}
-          placeholder="Digite para buscar ou criar uma tag..."
-          maxTags={10}
-        />
-      </div>
+      {!isFocusMode && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Tags</label>
+          <TagInput
+            tags={tags}
+            onTagsChange={setTags}
+            availableTags={availableTags}
+            placeholder="Digite para buscar ou criar uma tag..."
+            maxTags={10}
+          />
+        </div>
+      )}
 
       {/* Content Editor */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Conteúdo</label>
-        <RichTextEditor
-          content={content}
-          onChange={setContent}
-          placeholder="Comece a escrever suas anotações..."
-        />
+        {!isFocusMode && (
+          <label className="text-sm font-medium">Conteúdo</label>
+        )}
+        <div className={isFocusMode ? "editor-content" : ""}>
+          <RichTextEditor
+            content={content}
+            onChange={setContent}
+            placeholder="Comece a escrever suas anotações..."
+          />
+        </div>
       </div>
     </motion.div>
   );

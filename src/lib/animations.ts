@@ -28,6 +28,11 @@ export const animations = {
     stiffness: 400,
     damping: 10,
   },
+
+  // Hover otimizado
+  hover: {
+    duration: 0.15,
+  },
 };
 
 // Variantes de animação para componentes

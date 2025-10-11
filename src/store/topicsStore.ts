@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Topic, TopicTree, TopicsStore } from "@/types";
 import { loadTopics, debouncedSave } from "@/utils/storage";
+import { defaultTemplates } from "@/data/templates";
 
 // Função para construir árvore hierárquica
 function buildTopicTree(
@@ -38,6 +39,7 @@ export const useTopicsStore = create<TopicsStore>()(
       searchQuery: "",
       selectedTags: [],
       sortBy: "recent",
+      customTemplates: [],
 
       // CRUD operations
       createTopic: (topicData) => {
@@ -173,6 +175,57 @@ export const useTopicsStore = create<TopicsStore>()(
         const { topics } = get();
         return topics.find((topic) => topic.id === id);
       },
+
+      // Template operations
+      getAllTemplates: () => {
+        const { customTemplates } = get();
+        return [...defaultTemplates, ...customTemplates];
+      },
+      addTemplate: (template) => {
+        set((state) => ({
+          customTemplates: [...state.customTemplates, template],
+        }));
+      },
+      updateTemplate: (id, updates) => {
+        set((state) => ({
+          customTemplates: state.customTemplates.map((template) =>
+            template.id === id ? { ...template, ...updates } : template
+          ),
+        }));
+      },
+      deleteTemplate: (id) => {
+        set((state) => ({
+          customTemplates: state.customTemplates.filter(
+            (template) => template.id !== id
+          ),
+        }));
+      },
+      createTopicFromTemplate: (templateId, parentId = null) => {
+        const { getAllTemplates } = get();
+        const templates = getAllTemplates();
+        const template = templates.find((t) => t.id === templateId);
+
+        if (!template) return null;
+
+        const newTopic: Topic = {
+          id: crypto.randomUUID(),
+          title: template.defaultTitle,
+          content: template.defaultContent,
+          tags: template.defaultTags,
+          parentId,
+          collapsed: false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+
+        set((state) => ({
+          topics: [...state.topics, newTopic],
+          selectedTopic: newTopic.id,
+        }));
+
+        debouncedSave([...get().topics, newTopic]);
+        return newTopic;
+      },
     }),
     {
       name: "topics-storage",
@@ -180,6 +233,7 @@ export const useTopicsStore = create<TopicsStore>()(
         topics: state.topics,
         selectedTopic: state.selectedTopic,
         sortBy: state.sortBy,
+        customTemplates: state.customTemplates,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
