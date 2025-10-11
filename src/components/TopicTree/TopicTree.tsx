@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
+import { useExpandedNodes } from "@/hooks/useExpandedNodes";
 import { Button } from "@/components/ui/button";
 import { TopicTreeItem } from "./TopicTreeItem";
 import { Plus, ArrowLeft } from "lucide-react";
@@ -10,19 +10,9 @@ import { animations } from "@/lib/animations";
 export function TopicTree() {
   const navigate = useNavigate();
   const { getTopicTree, createTopic } = useTopicsStore();
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const { expandedNodes, toggleExpand } = useExpandedNodes();
 
   const topicTree = getTopicTree();
-
-  const handleToggleExpand = (nodeId: string) => {
-    const newExpanded = new Set(expandedNodes);
-    if (newExpanded.has(nodeId)) {
-      newExpanded.delete(nodeId);
-    } else {
-      newExpanded.add(nodeId);
-    }
-    setExpandedNodes(newExpanded);
-  };
 
   const handleAddRootTopic = () => {
     createTopic({
@@ -79,7 +69,7 @@ export function TopicTree() {
               topic={topic}
               level={0}
               expandedNodes={expandedNodes}
-              onToggleExpand={handleToggleExpand}
+              onToggleExpand={toggleExpand}
             />
           ))}
         </div>

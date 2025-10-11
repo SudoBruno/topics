@@ -130,7 +130,7 @@ export const TopicTreeItem = memo(function TopicTreeItem({
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              Criado em {formatDate(topic.createdAt)}
+              Criado em {formatDate(topic.created_at)}
             </p>
           </div>
 

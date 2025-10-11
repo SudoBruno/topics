@@ -37,10 +37,10 @@ export function TemplateSelector({
     setSelectedTemplate(template);
   };
 
-  const handleCreateFromTemplate = () => {
+  const handleCreateFromTemplate = async () => {
     if (!selectedTemplate) return;
 
-    const newTopic = createTopicFromTemplate(selectedTemplate.id, parentId);
+    const newTopic = await createTopicFromTemplate(selectedTemplate.id, parentId);
     if (newTopic) {
       navigate(`/topic/${newTopic.id}`);
       onClose();

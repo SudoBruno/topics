@@ -170,12 +170,12 @@ export const TopicCard = memo(function TopicCard({
           <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              <span>Criado em {formatDate(topic.createdAt)}</span>
+              <span>Criado em {formatDate(topic.created_at)}</span>
             </div>
-            {topic.updatedAt !== topic.createdAt && (
+            {topic.updated_at !== topic.created_at && (
               <div className="flex items-center gap-1">
                 <Edit className="h-3 w-3" />
-                <span>Editado em {formatDate(topic.updatedAt)}</span>
+                <span>Editado em {formatDate(topic.updated_at)}</span>
               </div>
             )}
           </div>

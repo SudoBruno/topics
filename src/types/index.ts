@@ -4,8 +4,9 @@ export interface Topic {
   content: string; // HTML do Tiptap
   tags: string[];
   parentId: string | null; // null = raiz
-  createdAt: number;
-  updatedAt: number;
+  user_id?: string; // ID do usuário (Supabase)
+  created_at: number;
+  updated_at: number;
   collapsed: boolean; // para UI
 }
 
@@ -20,17 +21,23 @@ export interface TopicsState {
   selectedTags: string[];
   sortBy: "recent" | "alphabetical" | "mostEdited";
   customTemplates: TopicTemplate[];
+  _initialized: boolean;
 }
 
 export interface TopicsActions {
+  // Initialization
+  initialize: () => Promise<void>;
+
   // CRUD operations
-  createTopic: (topic: Omit<Topic, "id" | "createdAt" | "updatedAt">) => void;
-  updateTopic: (id: string, updates: Partial<Topic>) => void;
-  deleteTopic: (id: string) => void;
+  createTopic: (
+    topic: Omit<Topic, "id" | "created_at" | "updated_at">
+  ) => Promise<void>;
+  updateTopic: (id: string, updates: Partial<Topic>) => Promise<void>;
+  deleteTopic: (id: string) => Promise<void>;
 
   // Tree operations
-  moveTopic: (id: string, newParentId: string | null) => void;
-  toggleCollapse: (id: string) => void;
+  moveTopic: (id: string, newParentId: string | null) => Promise<void>;
+  // toggleCollapse removido - gerenciado localmente
 
   // UI state
   setSelectedTopic: (id: string | null) => void;
@@ -52,7 +59,7 @@ export interface TopicsActions {
   createTopicFromTemplate: (
     templateId: string,
     parentId?: string | null
-  ) => Topic | null;
+  ) => Promise<Topic | null>;
 }
 
 export interface TopicTemplate {

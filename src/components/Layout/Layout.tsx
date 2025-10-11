@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import {
   Home,
   TreePine,
-  BookOpen,
+  FileText,
   Sun,
   Moon,
   Monitor,
   Search,
+  LogOut,
 } from "lucide-react";
 import { animations } from "@/lib/animations";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { CommandPalette } from "@/components/CommandPalette/CommandPalette";
+import { SyncStatus } from "@/components/SyncStatus/SyncStatus";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useState } from "react";
 
@@ -25,6 +28,7 @@ export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const navItems = [
@@ -62,6 +66,13 @@ export function Layout({ children }: LayoutProps) {
     onEscape: () => setIsCommandPaletteOpen(false),
   });
 
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (!error) {
+      navigate("/auth");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -79,8 +90,8 @@ export function Layout({ children }: LayoutProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <BookOpen className="h-6 w-6" />
-              <h1 className="text-xl font-bold">Anotações Políticas</h1>
+              <FileText className="h-6 w-6" />
+              <h1 className="text-xl font-bold">Topics</h1>
             </motion.div>
             <motion.nav
               className="flex items-center gap-2"
@@ -125,6 +136,10 @@ export function Layout({ children }: LayoutProps) {
                   <span className="hidden sm:inline">Buscar</span>
                 </Button>
               </motion.div>
+
+              {/* Sync Status */}
+              <SyncStatus />
+
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -154,6 +169,22 @@ export function Layout({ children }: LayoutProps) {
                   <span className="text-xs sm:hidden">
                     {theme === "system" ? "S" : theme === "light" ? "C" : "E"}
                   </span>
+                </Button>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="gap-2 text-muted-foreground hover:text-destructive"
+                  title={`Sair (${user?.email})`}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sair</span>
                 </Button>
               </motion.div>
             </div>
