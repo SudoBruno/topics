@@ -76,7 +76,7 @@ export const TopicCard = memo(function TopicCard({
       transition={animations.smooth}
     >
       <Card
-        className={`hover:shadow-lg transition-shadow duration-200 ${
+        className={`h-60 hover:shadow-lg transition-shadow duration-200 ${
           hasChildren ? "border-l-4 border-l-primary" : ""
         } ${className}`}
       >
@@ -147,25 +147,27 @@ export const TopicCard = memo(function TopicCard({
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0">
-          {topic.content && (
-            <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
-              {getPreview(topic.content)}
-            </p>
-          )}
+        <CardContent className="pt-0 flex flex-col h-full">
+          <div className="flex-1">
+            {topic.content && (
+              <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
+                {getPreview(topic.content)}
+              </p>
+            )}
 
-          {topic.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {topic.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  <Tag className="h-3 w-3 mr-1" />
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+            {topic.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-3">
+                {topic.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>Criado em {formatDate(topic.createdAt)}</span>
