@@ -1,24 +1,23 @@
-import type { ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import {
-  Home,
-  TreePine,
-  FileText,
-  Sun,
-  Moon,
-  Monitor,
-  Search,
-  LogOut,
-} from "lucide-react";
-import { animations } from "@/lib/animations";
-import { useTheme } from "@/contexts/ThemeContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { CommandPalette } from "@/components/CommandPalette/CommandPalette";
-import { SyncStatus } from "@/components/SyncStatus/SyncStatus";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { animations } from "@/lib/animations";
+import { motion } from "framer-motion";
+import {
+  FileText,
+  Home,
+  LogOut,
+  Monitor,
+  Moon,
+  Search,
+  Sun,
+  TreePine,
+} from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 interface LayoutProps {
   children: ReactNode;
@@ -136,9 +135,6 @@ export function Layout({ children }: LayoutProps) {
                   <span className="hidden sm:inline">Buscar</span>
                 </Button>
               </motion.div>
-
-              {/* Sync Status */}
-              <SyncStatus />
 
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
