@@ -1,14 +1,6 @@
-import { useSync } from "@/hooks/useSync";
+import { useTopicsStore } from "@/store/topicsStore";
 import { motion } from "framer-motion";
-import {
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  CheckCircle,
-  AlertCircle,
-  Cloud,
-  CloudOff,
-} from "lucide-react";
+import { Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -18,47 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export function SyncStatus() {
-  const { fullSync, isOnline, isSyncing, lastSync, error } = useSync();
-
-  const formatLastSync = (timestamp: number | null) => {
-    if (!timestamp) return "Nunca";
-
-    const now = Date.now();
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "Agora";
-    if (minutes < 60) return `${minutes}m atrás`;
-    if (hours < 24) return `${hours}h atrás`;
-    return `${days}d atrás`;
-  };
-
-  const getStatusIcon = () => {
-    if (error) return <AlertCircle className="h-4 w-4 text-destructive" />;
-    if (isSyncing)
-      return <RefreshCw className="h-4 w-4 animate-spin text-primary" />;
-    if (isOnline && lastSync)
-      return <CheckCircle className="h-4 w-4 text-green-500" />;
-    if (isOnline) return <Cloud className="h-4 w-4 text-muted-foreground" />;
-    return <CloudOff className="h-4 w-4 text-muted-foreground" />;
-  };
-
-  const getStatusText = () => {
-    if (error) return "Erro na sincronização";
-    if (isSyncing) return "Sincronizando...";
-    if (isOnline && lastSync) return `Sincronizado ${formatLastSync(lastSync)}`;
-    if (isOnline) return "Online - não sincronizado";
-    return "Offline";
-  };
-
-  const getStatusColor = () => {
-    if (error) return "text-destructive";
-    if (isSyncing) return "text-primary";
-    if (isOnline && lastSync) return "text-green-500";
-    return "text-muted-foreground";
-  };
+  const isOnline = navigator.onLine;
 
   return (
     <TooltipProvider>
@@ -79,19 +31,19 @@ export function SyncStatus() {
               )}
             </div>
 
-            {/* Status de sincronização */}
-            <Button
+            {/* Botão de recarregar */}
+            {/* <Button
               variant="ghost"
               size="sm"
-              onClick={fullSync}
-              disabled={!isOnline || isSyncing}
+              onClick={handleReload}
+              disabled={!isOnline}
               className="h-8 px-2 gap-1 text-xs"
             >
-              {getStatusIcon()}
-              <span className={`hidden sm:inline ${getStatusColor()}`}>
-                {getStatusText()}
+              <RefreshCw className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {isOnline ? "Recarregar" : "Offline"}
               </span>
-            </Button>
+            </Button> */}
           </motion.div>
         </TooltipTrigger>
 
@@ -108,46 +60,23 @@ export function SyncStatus() {
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              {getStatusIcon()}
-              <span className="text-sm">{getStatusText()}</span>
+            <div className="text-sm text-muted-foreground">
+              {isOnline
+                ? "Dados carregados do Supabase"
+                : "Sem conexão com a internet"}
             </div>
 
-            {error && (
-              <div className="text-xs text-destructive bg-destructive/10 p-2 rounded">
-                {error}
-              </div>
-            )}
-
-            {isOnline && !isSyncing && (
-              <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={fullSync}
-                  className="w-full h-8 text-xs"
-                >
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Sincronizar Agora
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    console.log("🔍 Debug: Verificando dados locais...");
-                    // Debug: verificar dados no IndexedDB
-                    import("@/lib/db").then(({ db }) => {
-                      db.topics.toArray().then((topics) => {
-                        console.log("📊 Tópicos no IndexedDB:", topics);
-                      });
-                    });
-                  }}
-                  className="w-full h-6 text-xs"
-                >
-                  🔍 Debug Local
-                </Button>
-              </div>
-            )}
+            {/* {isOnline && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReload}
+                className="w-full h-8 text-xs"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Recarregar Dados
+              </Button>
+            )} */}
           </div>
         </TooltipContent>
       </Tooltip>

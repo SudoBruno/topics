@@ -25,11 +25,11 @@ export function TemplateSelector({
   parentId,
 }: TemplateSelectorProps) {
   const navigate = useNavigate();
-  const { getAllTemplates, createTopicFromTemplate } = useTopicsStore();
+  const { getTemplates, createTopicFromTemplate } = useTopicsStore();
   const [selectedTemplate, setSelectedTemplate] =
     useState<TopicTemplate | null>(null);
 
-  const templates = getAllTemplates();
+  const templates = getTemplates();
   const defaultTemplates = templates.filter((t) => !t.isCustom);
   const customTemplates = templates.filter((t) => t.isCustom);
 
@@ -40,7 +40,7 @@ export function TemplateSelector({
   const handleCreateFromTemplate = async () => {
     if (!selectedTemplate) return;
 
-    const newTopic = await createTopicFromTemplate(selectedTemplate.id, parentId);
+    const newTopic = await createTopicFromTemplate(selectedTemplate, parentId);
     if (newTopic) {
       navigate(`/topic/${newTopic.id}`);
       onClose();

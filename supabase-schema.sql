@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS topics (
   tags TEXT[] DEFAULT '{}',
   parent_id TEXT,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  created_at BIGINT NOT NULL,
-  updated_at BIGINT NOT NULL
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
   -- collapsed removido - é apenas estado de UI local
 );
 
@@ -41,7 +41,22 @@ CREATE INDEX IF NOT EXISTS topics_updated_at_idx ON topics(updated_at);
 -- 8. Remover coluna collapsed se existir (não é necessária no banco)
 ALTER TABLE topics DROP COLUMN IF EXISTS collapsed;
 
--- 9. Verificar se a tabela foi criada corretamente
+-- 9. Verificar e converter colunas de timestamp se necessário
+-- Primeiro, verificar o tipo atual das colunas:
+SELECT 
+  column_name, 
+  data_type 
+FROM information_schema.columns 
+WHERE table_name = 'topics' 
+  AND column_name IN ('created_at', 'updated_at');
+
+-- Se as colunas forem BIGINT, execute:
+-- ALTER TABLE topics ALTER COLUMN created_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(created_at);
+-- ALTER TABLE topics ALTER COLUMN updated_at TYPE TIMESTAMP WITH TIME ZONE USING to_timestamp(updated_at);
+
+-- Se as colunas já forem TIMESTAMP WITH TIME ZONE, não faça nada.
+
+-- 11. Verificar se a tabela foi criada corretamente
 SELECT 
   column_name, 
   data_type, 

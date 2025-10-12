@@ -37,7 +37,6 @@ export interface TopicsActions {
 
   // Tree operations
   moveTopic: (id: string, newParentId: string | null) => Promise<void>;
-  // toggleCollapse removido - gerenciado localmente
 
   // UI state
   setSelectedTopic: (id: string | null) => void;
@@ -48,16 +47,19 @@ export interface TopicsActions {
   // Computed getters
   getTopicTree: () => TopicTree[];
   getFilteredTopics: () => Topic[];
+  getRootTopics: () => Topic[];
+  getChildren: (parentId: string) => Topic[];
+  hasChildren: (id: string) => boolean;
+  getChildrenCount: (id: string) => number;
+  getTopicById: (id: string) => Topic | null;
   getAllTags: () => string[];
-  getTopicById: (id: string) => Topic | undefined;
 
   // Template operations
-  getAllTemplates: () => TopicTemplate[];
-  addTemplate: (template: TopicTemplate) => void;
-  updateTemplate: (id: string, updates: Partial<TopicTemplate>) => void;
-  deleteTemplate: (id: string) => void;
+  getTemplates: () => TopicTemplate[];
+  saveCustomTemplate: (template: TopicTemplate) => void;
+  deleteCustomTemplate: (id: string) => void;
   createTopicFromTemplate: (
-    templateId: string,
+    template: TopicTemplate,
     parentId?: string | null
   ) => Promise<Topic | null>;
 }

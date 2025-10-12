@@ -120,7 +120,7 @@ export function Dashboard() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h1 className="text-3xl font-bold">Anotações Políticas</h1>
+          <h1 className="text-3xl font-bold">Tópicos</h1>
           <motion.p
             className="text-muted-foreground"
             key={filteredTopics.length}

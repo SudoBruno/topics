@@ -12,6 +12,7 @@ import {
   Trash2,
   Tag,
   FolderOpen,
+  Calendar,
 } from "lucide-react";
 import { animations } from "@/lib/animations";
 
@@ -104,15 +105,30 @@ export const TopicTreeItem = memo(function TopicTreeItem({
         <div className="flex-1 flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-medium flex items-center gap-2">
-                {hasChildren && (
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <FolderOpen className="h-3 w-3" />
-                    <span className="text-xs">({topic.children.length})</span>
-                  </div>
-                )}
-                {topic.title}
-              </h3>
+              <div className="flex flex-col gap-1">
+                <h3 className="font-medium flex items-center gap-2">
+                  {hasChildren && (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <FolderOpen className="h-3 w-3" />
+                      <span className="text-xs">({topic.children.length})</span>
+                    </div>
+                  )}
+                  {topic.title}
+                </h3>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  {topic.updated_at !== topic.created_at ? (
+                    <>
+                      <Edit className="h-3 w-3" />
+                      <span>Editado em {formatDate(topic.updated_at)}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Calendar className="h-3 w-3" />
+                      <span>Criado em {formatDate(topic.created_at)}</span>
+                    </>
+                  )}
+                </div>
+              </div>
               {topic.tags.length > 0 && (
                 <div className="flex gap-1">
                   {topic.tags.slice(0, 2).map((tag) => (
@@ -129,9 +145,6 @@ export const TopicTreeItem = memo(function TopicTreeItem({
                 </div>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Criado em {formatDate(topic.created_at)}
-            </p>
           </div>
 
           {/* Actions */}
