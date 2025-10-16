@@ -4,6 +4,7 @@ import { TopicEditor } from "@/components/TopicEditor/TopicEditor";
 import { TopicTree } from "@/components/TopicTree/TopicTree";
 import { Layout } from "@/components/Layout/Layout";
 import { AuthPage } from "@/pages/AuthPage";
+import { SharedTopicPage } from "@/pages/SharedTopicPage";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/shared/:token" element={<SharedTopicPage />} />
         <Route
           path="/*"
           element={

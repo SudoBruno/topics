@@ -12,7 +12,7 @@ import { Strike } from "@tiptap/extension-strike";
 import { Link } from "@tiptap/extension-link";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { useEffect, useState } from "react";
-import { NotionStyleToolbar } from "./NotionStyleToolbar";
+import { NotionStyleToolbar } from "@/components/Editor/NotionStyleToolbar";
 import { SlashCommand } from "./SlashCommand";
 import { Callout } from "./CalloutExtension";
 import { ImageUploadDialog } from "./ImageUploadDialog";

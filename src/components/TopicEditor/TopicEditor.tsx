@@ -7,9 +7,10 @@ import { NotionStyleEditor } from "@/components/Editor/NotionStyleEditor";
 import { TagInput } from "@/components/TagInput/TagInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Save, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, Save, Maximize, Minimize, Share2 } from "lucide-react";
 import { animations } from "@/lib/animations";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { ShareDialog } from "@/components/ShareDialog/ShareDialog";
 
 export function TopicEditor() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,7 @@ export function TopicEditor() {
   const [isEditing, setIsEditing] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const topic = id ? getTopicById(id) : null;
   const isNewTopic = !id;
@@ -172,6 +174,15 @@ export function TopicEditor() {
               <Maximize className="h-4 w-4" />
               Foco
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsShareDialogOpen(true)}
+              disabled={isNewTopic}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Compartilhar
+            </Button>
             <Button onClick={handleSave} className="gap-2">
               <Save className="h-4 w-4" />
               Salvar
@@ -196,6 +207,15 @@ export function TopicEditor() {
               {title || "Sem título"}
             </h1>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsShareDialogOpen(true)}
+            disabled={isNewTopic}
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            Compartilhar
+          </Button>
           <Button onClick={handleSave} className="gap-2" size="sm">
             <Save className="h-4 w-4" />
             Salvar
@@ -245,6 +265,15 @@ export function TopicEditor() {
           />
         </div>
       </div>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        isOpen={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        topicId={id || ""}
+        topicTitle={title}
+        hasSubtopics={false} // TODO: implementar verificação de sub-tópicos
+      />
     </motion.div>
   );
 }

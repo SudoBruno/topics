@@ -75,4 +75,20 @@ export interface TopicTemplate {
   isCustom: boolean;
 }
 
+export interface SharedTopic {
+  id: string; // UUID como string
+  topic_id: string; // UUID como string
+  share_token: string;
+  is_public: boolean;
+  include_subtopics: boolean;
+  user_id: string; // UUID como string
+  created_at: string; // ISO string do Supabase
+  updated_at: string; // ISO string do Supabase
+}
+
+export interface SharedTopicView extends Topic {
+  shared_by?: string; // email ou nome do usuário
+  share_info?: SharedTopic;
+}
+
 export type TopicsStore = TopicsState & TopicsActions;
