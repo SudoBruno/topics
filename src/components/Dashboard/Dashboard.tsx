@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
+import { useAuth } from "@/contexts/AuthContext";
 import { TopicCard } from "@/components/TopicCard/TopicCard";
 import { TemplateSelector } from "@/components/TemplateSelector/TemplateSelector";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { variants, animations } from "@/lib/animations";
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     getFilteredTopics,
     getAllTags,
@@ -32,11 +34,19 @@ export function Dashboard() {
     selectedTags,
     sortBy,
     deleteTopic,
+    initialize,
   } = useTopicsStore();
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
+
+  // Inicializar store quando usuário estiver autenticado
+  useEffect(() => {
+    if (user) {
+      initialize();
+    }
+  }, [user, initialize]);
 
   const filteredTopics = getFilteredTopics();
   const allTags = getAllTags();

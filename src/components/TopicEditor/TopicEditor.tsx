@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
+import { useAuth } from "@/contexts/AuthContext";
 import { RichTextEditor } from "@/components/Editor/RichTextEditor";
 import { TagInput } from "@/components/TagInput/TagInput";
 import { Button } from "@/components/ui/button";
@@ -14,33 +15,64 @@ export function TopicEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { getTopicById, updateTopic, createTopic, getAllTags } =
-    useTopicsStore();
+  const { user } = useAuth();
+  const {
+    getTopicById,
+    updateTopic,
+    createTopic,
+    getAllTags,
+    initialize,
+    topics,
+  } = useTopicsStore();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const topic = id ? getTopicById(id) : null;
   const isNewTopic = !id;
   const parentId = searchParams.get("parent");
   const parentTopic = parentId ? getTopicById(parentId) : null;
 
+  // Inicializar store quando usuário estiver autenticado
   useEffect(() => {
-    if (topic) {
-      setTitle(topic.title);
-      setContent(topic.content);
-      setTags(topic.tags);
-      setIsEditing(true);
-    } else if (isNewTopic) {
+    if (user) {
+      initialize();
+    }
+  }, [user, initialize]);
+
+  // Aguardar carregamento dos tópicos antes de tentar encontrar o tópico
+  useEffect(() => {
+    if (!user) return;
+
+    // Se é um tópico novo, pode editar imediatamente
+    if (isNewTopic) {
       setTitle("");
       setContent("");
       setTags([]);
       setIsEditing(true);
+      setIsLoading(false);
+      return;
     }
-  }, [topic, isNewTopic]);
+
+    // Se é um tópico existente, aguardar carregamento
+    if (id && topics.length > 0) {
+      const foundTopic = getTopicById(id);
+      if (foundTopic) {
+        setTitle(foundTopic.title);
+        setContent(foundTopic.content);
+        setTags(foundTopic.tags);
+        setIsEditing(true);
+        setIsLoading(false);
+      } else {
+        // Tópico não encontrado, redirecionar para dashboard
+        navigate("/");
+      }
+    }
+  }, [user, id, isNewTopic, topics, getTopicById, navigate]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -84,10 +116,11 @@ export function TopicEditor() {
     },
   });
 
-  if (!isEditing) {
+  if (isLoading || !isEditing) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Carregando...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+        <p className="text-muted-foreground">Carregando tópico...</p>
       </div>
     );
   }

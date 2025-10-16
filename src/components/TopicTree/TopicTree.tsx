@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
+import { useAuth } from "@/contexts/AuthContext";
 import { useExpandedNodes } from "@/hooks/useExpandedNodes";
 import { Button } from "@/components/ui/button";
 import { TopicTreeItem } from "./TopicTreeItem";
@@ -9,8 +11,24 @@ import { animations } from "@/lib/animations";
 
 export function TopicTree() {
   const navigate = useNavigate();
-  const { getTopicTree, createTopic } = useTopicsStore();
+  const { user } = useAuth();
+  const { getTopicTree, createTopic, initialize, topics } = useTopicsStore();
   const { expandedNodes, toggleExpand } = useExpandedNodes();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Inicializar store quando usuário estiver autenticado
+  useEffect(() => {
+    if (user) {
+      initialize();
+    }
+  }, [user, initialize]);
+
+  // Aguardar carregamento dos tópicos
+  useEffect(() => {
+    if (user && topics.length >= 0) {
+      setIsLoading(false);
+    }
+  }, [user, topics]);
 
   const topicTree = getTopicTree();
 
@@ -23,6 +41,15 @@ export function TopicTree() {
       collapsed: false,
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+        <p className="text-muted-foreground">Carregando árvore de tópicos...</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
