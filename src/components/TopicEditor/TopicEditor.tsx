@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTopicsStore } from "@/store/topicsStore";
 import { useAuth } from "@/contexts/AuthContext";
-import { RichTextEditor } from "@/components/Editor/RichTextEditor";
+import { NotionStyleEditor } from "@/components/Editor/NotionStyleEditor";
 import { TagInput } from "@/components/TagInput/TagInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -236,10 +236,12 @@ export function TopicEditor() {
           <label className="text-sm font-medium">Conteúdo</label>
         )}
         <div className={isFocusMode ? "editor-content" : ""}>
-          <RichTextEditor
+          <NotionStyleEditor
             content={content}
             onChange={setContent}
-            placeholder="Comece a escrever suas anotações..."
+            placeholder="Digite '/' para comandos..."
+            showWordCount={true}
+            autoSave={false}
           />
         </div>
       </div>
