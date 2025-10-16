@@ -141,10 +141,9 @@ export function SlashCommand({ editor, onClose }: SlashCommandProps) {
       description: "Inserir uma imagem",
       icon: <Image className="h-4 w-4" />,
       command: () => {
-        const url = window.prompt("Digite a URL da imagem:");
-        if (url) {
-          editor.chain().focus().setImage({ src: url }).run();
-        }
+        // Disparar evento para abrir o dialog de upload
+        const event = new CustomEvent("openImageUpload");
+        window.dispatchEvent(event);
         onClose();
       },
     },

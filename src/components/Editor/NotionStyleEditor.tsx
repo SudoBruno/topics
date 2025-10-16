@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { NotionStyleToolbar } from "./NotionStyleToolbar";
 import { SlashCommand } from "./SlashCommand";
 import { Callout } from "./CalloutExtension";
+import { ImageUploadDialog } from "./ImageUploadDialog";
 import { useSlashCommand } from "@/hooks/useSlashCommand";
 import "./notion-editor-styles.css";
 
@@ -101,6 +102,18 @@ export function NotionStyleEditor({
   });
 
   const slashCommand = useSlashCommand(editor);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
+  // Escutar evento do slash command para abrir upload de imagem
+  useEffect(() => {
+    const handleOpenImageUpload = () => {
+      setIsImageDialogOpen(true);
+    };
+
+    window.addEventListener("openImageUpload", handleOpenImageUpload);
+    return () =>
+      window.removeEventListener("openImageUpload", handleOpenImageUpload);
+  }, []);
 
   // Atualizar conteúdo quando prop mudar
   useEffect(() => {
@@ -158,6 +171,15 @@ export function NotionStyleEditor({
           {autoSave && <span className="auto-save">Auto-salvo</span>}
         </div>
       )}
+
+      {/* Image Upload Dialog */}
+      <ImageUploadDialog
+        isOpen={isImageDialogOpen}
+        onClose={() => setIsImageDialogOpen(false)}
+        onImageInsert={(src, alt) => {
+          editor.chain().focus().setImage({ src, alt }).run();
+        }}
+      />
     </div>
   );
 }
