@@ -222,6 +222,41 @@
   border-radius: 0.5rem;
   margin: 1rem 0;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.notion-editor img:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.1), 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.notion-editor img:active,
+.notion-editor img.selected,
+.notion-editor img:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  transform: scale(0.98);
+  outline: none;
+}
+
+/* Estado quando a imagem está selecionada/clicada */
+.notion-editor img[data-selected="true"] {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.3),
+    0 4px 12px 0 hsl(var(--primary) / 0.15);
+  transform: scale(1.02);
+  z-index: 10;
+  position: relative;
+}
+
+/* Estado de clique ativo */
+.notion-editor img:active {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.4),
+    0 2px 8px 0 hsl(var(--primary) / 0.2);
+  transform: scale(0.95);
 }
 
 /* Destaque */
@@ -384,6 +419,31 @@
   color: hsl(var(--purple-100));
 }
 
+/* Tema escuro para imagens */
+.dark .notion-editor img:hover {
+  border-color: hsl(var(--primary) / 0.4);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.2), 0 1px 3px 0 rgb(0 0 0 / 0.3);
+}
+
+.dark .notion-editor img:active,
+.dark .notion-editor img.selected,
+.dark .notion-editor img:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3), 0 1px 3px 0 rgb(0 0 0 / 0.3);
+}
+
+.dark .notion-editor img[data-selected="true"] {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.4),
+    0 4px 12px 0 hsl(var(--primary) / 0.2);
+}
+
+.dark .notion-editor img:active {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.5),
+    0 2px 8px 0 hsl(var(--primary) / 0.3);
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .notion-editor {
@@ -402,4 +462,143 @@
   .notion-editor h3 {
     font-size: 1.125rem;
   }
+}
+
+/* Upload inline component */
+.inline-upload {
+  position: relative;
+  border: 2px dashed hsl(var(--border));
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  background: hsl(var(--muted) / 0.3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin: 1rem 0;
+}
+
+.inline-upload:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  background: hsl(var(--primary) / 0.05);
+}
+
+.inline-upload.drag-active {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+  transform: scale(1.02);
+}
+
+.inline-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inline-upload-icon {
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s ease;
+}
+
+.inline-upload:hover .inline-upload-icon {
+  color: hsl(var(--primary));
+}
+
+.inline-upload-text {
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.inline-upload-subtext {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.inline-upload-preview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid hsl(var(--border));
+  margin: 1rem 0;
+}
+
+.inline-upload-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  cursor: default;
+}
+
+.inline-upload-preview img:hover {
+  border: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.inline-upload-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.inline-upload-preview:hover .inline-upload-actions {
+  opacity: 1;
+}
+
+.inline-upload-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: hsl(var(--muted));
+  overflow: hidden;
+}
+
+.inline-upload-progress-bar {
+  height: 100%;
+  background: hsl(var(--primary));
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.inline-upload-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.inline-upload-status.success {
+  color: hsl(var(--green-600));
+}
+
+.inline-upload-status.error {
+  color: hsl(var(--destructive));
+}
+
+.inline-upload-status.uploading {
+  color: hsl(var(--primary));
+}
+
+/* Tema escuro para upload inline */
+.dark .inline-upload {
+  background: hsl(var(--muted) / 0.2);
+}
+
+.dark .inline-upload:hover {
+  background: hsl(var(--primary) / 0.1);
+}
+
+.dark .inline-upload.drag-active {
+  background: hsl(var(--primary) / 0.15);
 }

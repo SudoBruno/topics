@@ -141,8 +141,8 @@ export function SlashCommand({ editor, onClose }: SlashCommandProps) {
       description: "Inserir uma imagem",
       icon: <Image className="h-4 w-4" />,
       command: () => {
-        // Disparar evento para abrir o dialog de upload
-        const event = new CustomEvent("openImageUpload");
+        // Disparar evento para abrir o upload inline
+        const event = new CustomEvent("openInlineImageUpload");
         window.dispatchEvent(event);
         onClose();
       },

@@ -1,7 +1,5 @@
 import { Editor } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
-import { ImageUploadDialog } from "./ImageUploadDialog";
-import { useState } from "react";
 import {
   Bold,
   Italic,
@@ -37,8 +35,6 @@ interface NotionStyleToolbarProps {
 }
 
 export function NotionStyleToolbar({ editor }: NotionStyleToolbarProps) {
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-
   if (!editor) return null;
 
   const ToolbarButton = ({
@@ -304,7 +300,10 @@ export function NotionStyleToolbar({ editor }: NotionStyleToolbarProps) {
       {/* Mídia e Links */}
       <div className="flex items-center gap-1">
         <ToolbarButton
-          onClick={() => setIsImageDialogOpen(true)}
+          onClick={() => {
+            const event = new CustomEvent("openInlineImageUpload");
+            window.dispatchEvent(event);
+          }}
           isActive={false}
           title="Inserir imagem"
         >
@@ -345,15 +344,6 @@ export function NotionStyleToolbar({ editor }: NotionStyleToolbarProps) {
           <Subscript className="h-4 w-4" />
         </ToolbarButton>
       </div>
-
-      {/* Image Upload Dialog */}
-      <ImageUploadDialog
-        isOpen={isImageDialogOpen}
-        onClose={() => setIsImageDialogOpen(false)}
-        onImageInsert={(src, alt) => {
-          editor.chain().focus().setImage({ src, alt }).run();
-        }}
-      />
     </div>
   );
 }

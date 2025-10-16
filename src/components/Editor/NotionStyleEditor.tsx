@@ -16,6 +16,7 @@ import { NotionStyleToolbar } from "./NotionStyleToolbar";
 import { SlashCommand } from "./SlashCommand";
 import { Callout } from "./CalloutExtension";
 import { ImageUploadDialog } from "./ImageUploadDialog";
+import { InlineImageUpload } from "./InlineImageUpload";
 import { useSlashCommand } from "@/hooks/useSlashCommand";
 import "./notion-editor-styles.css";
 
@@ -40,6 +41,10 @@ export function NotionStyleEditor({
 }: NotionStyleEditorProps) {
   const [wordCount, setWordCount] = useState(0);
   const [charCount, setCharCount] = useState(0);
+  const [showInlineUpload, setShowInlineUpload] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(
+    null
+  );
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -110,10 +115,57 @@ export function NotionStyleEditor({
       setIsImageDialogOpen(true);
     };
 
+    const handleOpenInlineUpload = () => {
+      setShowInlineUpload(true);
+    };
+
     window.addEventListener("openImageUpload", handleOpenImageUpload);
-    return () =>
+    window.addEventListener("openInlineImageUpload", handleOpenInlineUpload);
+
+    return () => {
       window.removeEventListener("openImageUpload", handleOpenImageUpload);
+      window.removeEventListener(
+        "openInlineImageUpload",
+        handleOpenInlineUpload
+      );
+    };
   }, []);
+
+  // Gerenciar seleção de imagens
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleImageClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      if (target.tagName === "IMG") {
+        // Remover seleção anterior
+        if (selectedImage) {
+          selectedImage.removeAttribute("data-selected");
+        }
+
+        // Selecionar nova imagem
+        const img = target as HTMLImageElement;
+        img.setAttribute("data-selected", "true");
+        setSelectedImage(img);
+
+        event.stopPropagation();
+      } else {
+        // Clicou em outra área, remover seleção
+        if (selectedImage) {
+          selectedImage.removeAttribute("data-selected");
+          setSelectedImage(null);
+        }
+      }
+    };
+
+    const editorElement = editor.view.dom;
+    editorElement.addEventListener("click", handleImageClick);
+
+    return () => {
+      editorElement.removeEventListener("click", handleImageClick);
+    };
+  }, [editor, selectedImage]);
 
   // Atualizar conteúdo quando prop mudar
   useEffect(() => {
@@ -145,6 +197,15 @@ export function NotionStyleEditor({
     <div className={`notion-editor-wrapper ${className}`}>
       <NotionStyleToolbar editor={editor} />
       <div className="notion-editor-content-wrapper">
+        {showInlineUpload && (
+          <InlineImageUpload
+            onImageInsert={(src, alt) => {
+              editor.chain().focus().setImage({ src, alt }).run();
+              setShowInlineUpload(false);
+            }}
+            onCancel={() => setShowInlineUpload(false)}
+          />
+        )}
         <EditorContent editor={editor} />
         {slashCommand.isOpen && slashCommand.position && (
           <div
